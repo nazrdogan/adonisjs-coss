@@ -4,6 +4,17 @@
  */
 
 export const controllers = {
+  ApiKeys: () => import('#controllers/api_keys_controller'),
+  api: {
+    v1: {
+      Request: () => import('#controllers/api/v1/request_controller'),
+      Result: () => import('#controllers/api/v1/result_controller'),
+      Openapi: () => import('#controllers/api/v1/openapi_controller'),
+    },
+  },
+  Dashboard: () => import('#controllers/dashboard_controller'),
+  EmailVerification: () => import('#controllers/email_verification_controller'),
   NewAccount: () => import('#controllers/new_account_controller'),
   Session: () => import('#controllers/session_controller'),
+  PasswordReset: () => import('#controllers/password_reset_controller'),
 }

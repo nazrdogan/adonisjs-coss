@@ -1,0 +1,310 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Emerald API",
+    "description": "Amazon product data scraping API. Retrieve product details, search results, reviews, offers, categories, bestsellers, deals, questions, and seller information from 21 Amazon domains.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Emerald Support"
+    }
+  },
+  "servers": [
+    {
+      "url": "/api/v1",
+      "description": "API v1"
+    }
+  ],
+  "security": [
+    { "BearerAuth": [] },
+    { "ApiKeyQuery": [] }
+  ],
+  "paths": {
+    "/request": {
+      "get": {
+        "operationId": "scrapeRequest",
+        "summary": "Scrape Amazon data",
+        "description": "Submit a scraping request for any supported Amazon data type. Supports both synchronous and asynchronous modes.",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "required": true,
+            "description": "The type of data to scrape",
+            "schema": {
+              "type": "string",
+              "enum": ["product", "search", "reviews", "offers", "category", "bestsellers", "deals", "questions", "seller"]
+            }
+          },
+          {
+            "name": "asin",
+            "in": "query",
+            "description": "Amazon ASIN (required for product, reviews, offers, questions)",
+            "schema": { "type": "string", "pattern": "^[A-Z0-9]{10}$" }
+          },
+          {
+            "name": "search_term",
+            "in": "query",
+            "description": "Search query (required for type=search)",
+            "schema": { "type": "string", "maxLength": 500 }
+          },
+          {
+            "name": "browse_node_id",
+            "in": "query",
+            "description": "Amazon browse node ID (required for type=category)",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "description": "Category path for bestsellers",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "seller_id",
+            "in": "query",
+            "description": "Amazon seller ID (required for type=seller)",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "amazon_domain",
+            "in": "query",
+            "description": "Amazon domain to scrape from",
+            "schema": {
+              "type": "string",
+              "default": "amazon.com",
+              "enum": ["amazon.com", "amazon.co.uk", "amazon.de", "amazon.fr", "amazon.it", "amazon.es", "amazon.ca", "amazon.com.au", "amazon.co.jp", "amazon.in", "amazon.com.br", "amazon.com.mx", "amazon.nl", "amazon.sg", "amazon.se", "amazon.pl", "amazon.com.be", "amazon.com.tr", "amazon.sa", "amazon.ae", "amazon.eg"]
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for paginated results",
+            "schema": { "type": "integer", "minimum": 1, "default": 1 }
+          },
+          {
+            "name": "country",
+            "in": "query",
+            "description": "2-letter country code for geo-targeting",
+            "schema": { "type": "string", "minLength": 2, "maxLength": 2 }
+          },
+          {
+            "name": "output",
+            "in": "query",
+            "description": "Response format",
+            "schema": { "type": "string", "enum": ["json", "csv"], "default": "json" }
+          },
+          {
+            "name": "async",
+            "in": "query",
+            "description": "Set to 'true' to queue the request and return a poll URL",
+            "schema": { "type": "string", "enum": ["true", "false"], "default": "false" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful scrape result",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ScrapeResponse" }
+              },
+              "text/csv": {
+                "schema": { "type": "string" }
+              }
+            }
+          },
+          "202": {
+            "description": "Request queued (async mode)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AsyncResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "502": {
+            "description": "Scraping failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/result/{id}": {
+      "get": {
+        "operationId": "getResult",
+        "summary": "Poll async result",
+        "description": "Poll for the result of an async scraping request.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Job ID returned from async request",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "output",
+            "in": "query",
+            "description": "Response format",
+            "schema": { "type": "string", "enum": ["json", "csv"], "default": "json" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Completed result",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ScrapeResponse" }
+              }
+            }
+          },
+          "202": {
+            "description": "Job still processing",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AsyncResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Job not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openapi.json": {
+      "get": {
+        "operationId": "getOpenApiSpec",
+        "summary": "OpenAPI specification",
+        "description": "Returns the OpenAPI 3.0 JSON specification for this API.",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "OpenAPI spec",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/docs": {
+      "get": {
+        "operationId": "getSwaggerDocs",
+        "summary": "Swagger UI documentation",
+        "description": "Interactive API documentation powered by Swagger UI.",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Swagger UI HTML page",
+            "content": {
+              "text/html": {
+                "schema": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Pass your API key as a Bearer token in the Authorization header"
+      },
+      "ApiKeyQuery": {
+        "type": "apiKey",
+        "in": "query",
+        "name": "api_key",
+        "description": "Pass your API key as a query parameter"
+      }
+    },
+    "schemas": {
+      "ScrapeResponse": {
+        "type": "object",
+        "properties": {
+          "request_info": {
+            "type": "object",
+            "properties": {
+              "success": { "type": "boolean" },
+              "amazon_url": { "type": "string" },
+              "amazon_domain": { "type": "string" },
+              "type": { "type": "string" },
+              "scrape_method": { "type": "string", "enum": ["cheerio", "playwright"] },
+              "time_taken_secs": { "type": "string" }
+            }
+          }
+        },
+        "additionalProperties": true
+      },
+      "AsyncResponse": {
+        "type": "object",
+        "properties": {
+          "request_info": {
+            "type": "object",
+            "properties": {
+              "success": { "type": "boolean" },
+              "status": { "type": "string" }
+            }
+          },
+          "request_id": { "type": "string" },
+          "poll_url": { "type": "string" },
+          "message": { "type": "string" }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "request_info": {
+            "type": "object",
+            "properties": {
+              "success": { "type": "boolean", "example": false }
+            }
+          },
+          "request_metadata": {
+            "type": "object",
+            "properties": {
+              "error": { "type": "string" },
+              "message": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

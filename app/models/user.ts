@@ -2,6 +2,11 @@ import { UserSchema } from '#database/schema'
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
+import { belongsTo, hasMany } from '@adonisjs/lucid/orm'
+import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
+import Plan from '#models/plan'
+import ApiKey from '#models/api_key'
+import ApiRequest from '#models/api_request'
 
 export default class User extends compose(UserSchema, withAuthFinder(hash)) {
   get initials() {
@@ -11,4 +16,13 @@ export default class User extends compose(UserSchema, withAuthFinder(hash)) {
     }
     return `${first.slice(0, 2)}`.toUpperCase()
   }
+
+  @belongsTo(() => Plan)
+  declare plan: BelongsTo<typeof Plan>
+
+  @hasMany(() => ApiKey)
+  declare apiKeys: HasMany<typeof ApiKey>
+
+  @hasMany(() => ApiRequest)
+  declare apiRequests: HasMany<typeof ApiRequest>
 }

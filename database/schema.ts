@@ -7,8 +7,81 @@
 import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 
+export class ApiKeySchema extends BaseModel {
+  static $columns = ['id', 'userId', 'name', 'key', 'isActive', 'lastUsedAt', 'createdAt', 'updatedAt'] as const
+  $columns = ApiKeySchema.$columns
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare userId: number
+  @column()
+  declare name: string
+  @column()
+  declare key: string
+  @column()
+  declare isActive: boolean
+  @column.dateTime()
+  declare lastUsedAt: DateTime | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class ApiRequestSchema extends BaseModel {
+  static $columns = ['id', 'userId', 'apiKeyId', 'type', 'amazonDomain', 'asin', 'query', 'status', 'responseCached', 'creditsUsed', 'errorMessage', 'createdAt', 'updatedAt'] as const
+  $columns = ApiRequestSchema.$columns
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare userId: number
+  @column()
+  declare apiKeyId: number | null
+  @column()
+  declare type: string
+  @column()
+  declare amazonDomain: string
+  @column()
+  declare asin: string | null
+  @column()
+  declare query: string | null
+  @column()
+  declare status: string
+  @column()
+  declare responseCached: boolean
+  @column()
+  declare creditsUsed: number
+  @column()
+  declare errorMessage: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class PlanSchema extends BaseModel {
+  static $columns = ['id', 'name', 'slug', 'priceMonthly', 'requestLimit', 'isActive', 'createdAt', 'updatedAt'] as const
+  $columns = PlanSchema.$columns
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare name: string
+  @column()
+  declare slug: string
+  @column()
+  declare priceMonthly: number
+  @column()
+  declare requestLimit: number
+  @column()
+  declare isActive: boolean
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class UserSchema extends BaseModel {
-  static $columns = ['id', 'fullName', 'email', 'password', 'createdAt', 'updatedAt'] as const
+  static $columns = ['id', 'fullName', 'email', 'password', 'createdAt', 'updatedAt', 'planId', 'monthlyRequestsUsed', 'requestsResetAt', 'emailVerifiedAt', 'emailVerificationToken', 'passwordResetToken', 'passwordResetTokenCreatedAt'] as const
   $columns = UserSchema.$columns
   @column({ isPrimary: true })
   declare id: number
@@ -22,4 +95,18 @@ export class UserSchema extends BaseModel {
   declare createdAt: DateTime
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+  @column()
+  declare planId: number | null
+  @column()
+  declare monthlyRequestsUsed: number
+  @column.dateTime()
+  declare requestsResetAt: DateTime | null
+  @column.dateTime()
+  declare emailVerifiedAt: DateTime | null
+  @column()
+  declare emailVerificationToken: string | null
+  @column()
+  declare passwordResetToken: string | null
+  @column.dateTime()
+  declare passwordResetTokenCreatedAt: DateTime | null
 }

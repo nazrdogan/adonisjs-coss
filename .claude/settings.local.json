@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(createdb:*)",
+      "mcp__chrome-devtools__navigate_page",
+      "mcp__chrome-devtools__take_screenshot",
+      "WebFetch(domain:rainforestapi.com)",
+      "WebFetch(domain:trajectdata.com)",
+      "Bash(npx shadcn@latest:*)",
+      "Bash(printf N\\\\nN\\\\ny\\\\n:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(node ace:*)",
+      "Bash(nvm ls:*)",
+      "Bash(source:*)",
+      "WebFetch(domain:coss.com)",
+      "Bash(curl:*)",
+      "WebFetch(domain:docs.adonisjs.com)",
+      "WebSearch",
+      "Bash(npx tsc:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(npm:*)",
+      "Bash(python3:*)",
+      "WebFetch(domain:adocasts.com)"
+    ]
+  }
+}
