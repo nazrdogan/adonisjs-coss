@@ -11,6 +11,7 @@ import {
   DialogDescription,
   DialogTrigger,
 } from '~/components/ui/dialog'
+import { Link } from '@adonisjs/inertia/react'
 import {
   Activity,
   Key,
@@ -24,6 +25,8 @@ import {
   AlertTriangle,
   XCircle,
   BarChart3,
+  Download,
+  ArrowUpRight,
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -252,9 +255,15 @@ const Dashboard: React.FC<Props> = ({
             Manage your API keys and monitor usage
           </p>
         </div>
-        <Badge variant="outline" className="text-sm px-3 py-1">
-          {plan.name}
-        </Badge>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="text-sm px-3 py-1">
+            {plan.name}
+          </Badge>
+          <Button variant="ghost" size="sm" render={<Link route={'billing.index' as any} />}>
+            Upgrade
+            <ArrowUpRight className="size-3.5 ml-1" />
+          </Button>
+        </div>
       </div>
 
       <LimitAlert usagePercent={usagePercent} plan={plan} />
@@ -449,7 +458,17 @@ const Dashboard: React.FC<Props> = ({
                 <CardTitle>Recent requests</CardTitle>
                 <CardDescription className="mt-1">Last 20 API calls — click for details</CardDescription>
               </div>
-              <TrendingUp className="size-4 text-neutral-400" />
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  render={<a href="/export/requests" />}
+                >
+                  <Download className="size-3.5 mr-1.5" />
+                  Export CSV
+                </Button>
+                <TrendingUp className="size-4 text-neutral-400" />
+              </div>
             </div>
           </CardHeader>
           <CardContent>

@@ -60,7 +60,7 @@ export class ApiRequestSchema extends BaseModel {
 }
 
 export class PlanSchema extends BaseModel {
-  static $columns = ['id', 'name', 'slug', 'priceMonthly', 'requestLimit', 'isActive', 'createdAt', 'updatedAt'] as const
+  static $columns = ['id', 'name', 'slug', 'priceMonthly', 'requestLimit', 'isActive', 'createdAt', 'updatedAt', 'stripePriceId'] as const
   $columns = PlanSchema.$columns
   @column({ isPrimary: true })
   declare id: number
@@ -78,10 +78,12 @@ export class PlanSchema extends BaseModel {
   declare createdAt: DateTime
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+  @column()
+  declare stripePriceId: string | null
 }
 
 export class UserSchema extends BaseModel {
-  static $columns = ['id', 'fullName', 'email', 'password', 'createdAt', 'updatedAt', 'planId', 'monthlyRequestsUsed', 'requestsResetAt', 'emailVerifiedAt', 'emailVerificationToken', 'passwordResetToken', 'passwordResetTokenCreatedAt'] as const
+  static $columns = ['id', 'fullName', 'email', 'password', 'createdAt', 'updatedAt', 'planId', 'monthlyRequestsUsed', 'requestsResetAt', 'emailVerifiedAt', 'emailVerificationToken', 'passwordResetToken', 'passwordResetTokenCreatedAt', 'stripeCustomerId', 'stripeSubscriptionId', 'googleId'] as const
   $columns = UserSchema.$columns
   @column({ isPrimary: true })
   declare id: number
@@ -90,7 +92,7 @@ export class UserSchema extends BaseModel {
   @column()
   declare email: string
   @column({ serializeAs: null })
-  declare password: string
+  declare password: string | null
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
   @column.dateTime({ autoCreate: true, autoUpdate: true })
@@ -109,4 +111,56 @@ export class UserSchema extends BaseModel {
   declare passwordResetToken: string | null
   @column.dateTime()
   declare passwordResetTokenCreatedAt: DateTime | null
+  @column()
+  declare stripeCustomerId: string | null
+  @column()
+  declare stripeSubscriptionId: string | null
+  @column()
+  declare googleId: string | null
+}
+
+export class WebhookDeliverySchema extends BaseModel {
+  static $columns = ['id', 'endpointId', 'event', 'payload', 'status', 'attempts', 'lastResponseCode', 'lastError', 'createdAt', 'updatedAt'] as const
+  $columns = WebhookDeliverySchema.$columns
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare endpointId: number
+  @column()
+  declare event: string
+  @column()
+  declare payload: any
+  @column()
+  declare status: string
+  @column()
+  declare attempts: number
+  @column()
+  declare lastResponseCode: number | null
+  @column()
+  declare lastError: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class WebhookEndpointSchema extends BaseModel {
+  static $columns = ['id', 'userId', 'url', 'secret', 'events', 'isActive', 'createdAt', 'updatedAt'] as const
+  $columns = WebhookEndpointSchema.$columns
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare userId: number
+  @column()
+  declare url: string
+  @column()
+  declare secret: string
+  @column()
+  declare events: any
+  @column()
+  declare isActive: boolean
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
 }

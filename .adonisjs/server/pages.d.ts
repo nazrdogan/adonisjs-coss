@@ -23,5 +23,7 @@ declare module '@adonisjs/inertia/types' {
     'home': ExtractProps<(typeof import('../../inertia/pages/home.tsx'))['default']>
     'auth/forgot-password': ExtractProps<(typeof import('../../inertia/pages/auth/forgot-password.tsx'))['default']>
     'auth/reset-password': ExtractProps<(typeof import('../../inertia/pages/auth/reset-password.tsx'))['default']>
+    'dashboard/webhooks': ExtractProps<(typeof import('../../inertia/pages/dashboard/webhooks.tsx'))['default']>
+    'dashboard/billing': ExtractProps<(typeof import('../../inertia/pages/dashboard/billing.tsx'))['default']>
   }
 }

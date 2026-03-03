@@ -7,8 +7,16 @@ export default class SessionController {
     return inertia.render('auth/login', {})
   }
 
-  async store({ request, auth, response }: HttpContext) {
+  async store({ request, auth, response, session }: HttpContext) {
     const { email, password } = await request.validateUsing(loginValidator)
+
+    // Check if user is Google-only (no password set)
+    const existingUser = await User.findBy('email', email)
+    if (existingUser && !existingUser.password && existingUser.googleId) {
+      session.flash('errors', { google: 'This account uses Google sign-in. Please click "Continue with Google" below.' })
+      return response.redirect().toRoute('session.create')
+    }
+
     const user = await User.verifyCredentials(email, password)
 
     await auth.use('web').login(user)

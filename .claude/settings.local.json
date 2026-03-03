@@ -22,7 +22,13 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(npm:*)",
       "Bash(python3:*)",
-      "WebFetch(domain:adocasts.com)"
+      "WebFetch(domain:adocasts.com)",
+      "WebFetch(domain:www.npmjs.com)",
+      "mcp__chrome-devtools__take_snapshot",
+      "mcp__chrome-devtools__list_console_messages",
+      "mcp__chrome-devtools__get_console_message",
+      "mcp__chrome-devtools__list_network_requests",
+      "mcp__chrome-devtools__evaluate_script"
     ]
   }
 }

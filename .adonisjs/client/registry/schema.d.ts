@@ -62,6 +62,28 @@ export interface Registry {
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/session_controller').default['store']>>>
     }
   }
+  'auth.google.redirect': {
+    methods: ["GET","HEAD"]
+    pattern: '/auth/google/redirect'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/google_auth_controller').default['redirect']>>>
+    }
+  }
+  'auth.google.callback': {
+    methods: ["GET","HEAD"]
+    pattern: '/auth/google/callback'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/google_auth_controller').default['callback']>>>
+    }
+  }
   'password.forgot': {
     methods: ["GET","HEAD"]
     pattern: '/forgot-password'
@@ -214,6 +236,127 @@ export interface Registry {
       params: { id: ParamValue }
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/api_keys_controller').default['destroy']>>>
+    }
+  }
+  'webhooks.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/webhooks'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/webhooks_controller').default['index']>>>
+    }
+  }
+  'webhooks.store': {
+    methods: ["POST"]
+    pattern: '/webhooks'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/webhooks_controller').default['store']>>>
+    }
+  }
+  'webhooks.destroy': {
+    methods: ["DELETE"]
+    pattern: '/webhooks/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/webhooks_controller').default['destroy']>>>
+    }
+  }
+  'webhooks.test': {
+    methods: ["POST"]
+    pattern: '/webhooks/:id/test'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/webhooks_controller').default['test']>>>
+    }
+  }
+  'billing.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/billing'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/billing_controller').default['index']>>>
+    }
+  }
+  'billing.checkout': {
+    methods: ["POST"]
+    pattern: '/billing/checkout'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/billing_controller').default['checkout']>>>
+    }
+  }
+  'billing.portal': {
+    methods: ["POST"]
+    pattern: '/billing/portal'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/billing_controller').default['portal']>>>
+    }
+  }
+  'export.requests': {
+    methods: ["GET","HEAD"]
+    pattern: '/export/requests'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/api/v1/export_controller').default['requests']>>>
+    }
+  }
+  'api.v1.openapi': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/openapi.json'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/api/v1/openapi_controller').default['spec']>>>
+    }
+  }
+  'api.v1.docs': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/docs'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/api/v1/openapi_controller').default['docs']>>>
+    }
+  }
+  'api.v1.stripe.webhook': {
+    methods: ["POST"]
+    pattern: '/api/v1/stripe/webhook'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/api/v1/stripe_webhook_controller').default['handle']>>>
     }
   }
   'api.v1.request': {

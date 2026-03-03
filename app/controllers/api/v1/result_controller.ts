@@ -1,10 +1,12 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import redis from '@adonisjs/redis/services/main'
 import queue from '@rlanz/bull-queue/services/main'
+import { CsvService } from '#services/csv_service'
 
 export default class ResultController {
-  async handle({ params, response }: HttpContext) {
+  async handle({ params, request, response }: HttpContext) {
     const jobId = params.id as string
+    const outputFormat = (request.qs().output as string) ?? 'json'
 
     // Check if result is stored in Redis (completed jobs)
     const cached = await redis.get(`job_result:${jobId}`)
@@ -12,12 +14,18 @@ export default class ResultController {
       const parsed = JSON.parse(cached)
       if (parsed.success) {
         const result = parsed.data
-        return response.json({
+        const jsonResponse = {
           request_info: { success: true, status: 'completed', ...result.request_info },
           ...Object.fromEntries(
             Object.entries(result).filter(([k]) => k !== 'request_info' && k !== 'cached')
           ),
-        })
+        }
+
+        if (outputFormat === 'csv') {
+          return this.respondCsv(response, jsonResponse, result.request_info?.type)
+        }
+
+        return response.json(jsonResponse)
       } else {
         return response.status(502).json({
           request_info: { success: false, status: 'failed' },
@@ -54,15 +62,20 @@ export default class ResultController {
     const state = await job.getState()
 
     if (state === 'completed') {
-      // Job completed but result expired from Redis — return from job data
       const result = job.returnvalue
       if (result?.success && result.data) {
-        return response.json({
+        const jsonResponse = {
           request_info: { success: true, status: 'completed', ...result.data.request_info },
           ...Object.fromEntries(
             Object.entries(result.data).filter(([k]) => k !== 'request_info' && k !== 'cached')
           ),
-        })
+        }
+
+        if (outputFormat === 'csv') {
+          return this.respondCsv(response, jsonResponse, result.data.request_info?.type)
+        }
+
+        return response.json(jsonResponse)
       }
       return response.status(502).json({
         request_info: { success: false, status: 'failed' },
@@ -84,5 +97,21 @@ export default class ResultController {
       poll_url: `/api/v1/result/${jobId}`,
       message: `Job is ${state}. Please poll again.`,
     })
+  }
+
+  private respondCsv(
+    response: HttpContext['response'],
+    jsonResponse: Record<string, unknown>,
+    type?: string
+  ) {
+    const csvService = new CsvService()
+    const dataKey = Object.keys(jsonResponse).find((k) => k !== 'request_info')
+    const dataToExport = dataKey ? jsonResponse[dataKey] : jsonResponse
+    const csv = csvService.jsonToCsv(dataToExport as unknown)
+
+    return response
+      .header('Content-Type', 'text/csv')
+      .header('Content-Disposition', `attachment; filename="emerald-${type ?? 'result'}.csv"`)
+      .send(csv)
   }
 }

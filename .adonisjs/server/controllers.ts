@@ -10,6 +10,8 @@ export const controllers = {
       Request: () => import('#controllers/api/v1/request_controller'),
       Result: () => import('#controllers/api/v1/result_controller'),
       Openapi: () => import('#controllers/api/v1/openapi_controller'),
+      Export: () => import('#controllers/api/v1/export_controller'),
+      StripeWebhook: () => import('#controllers/api/v1/stripe_webhook_controller'),
     },
   },
   Dashboard: () => import('#controllers/dashboard_controller'),
@@ -17,4 +19,7 @@ export const controllers = {
   NewAccount: () => import('#controllers/new_account_controller'),
   Session: () => import('#controllers/session_controller'),
   PasswordReset: () => import('#controllers/password_reset_controller'),
+  Webhooks: () => import('#controllers/webhooks_controller'),
+  Billing: () => import('#controllers/billing_controller'),
+  GoogleAuth: () => import('#controllers/google_auth_controller'),
 }

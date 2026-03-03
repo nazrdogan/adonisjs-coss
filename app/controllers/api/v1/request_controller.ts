@@ -1,6 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { ScraperService, type RequestType } from '#services/scraper_service'
 import { apiRequestValidator } from '#validators/api_request'
+import { CsvService } from '#services/csv_service'
 import ApiRequest from '#models/api_request'
 import queue from '@rlanz/bull-queue/services/main'
 import ScrapeJob from '#jobs/scrape_job'
@@ -32,6 +33,7 @@ export default class RequestController {
     const amazonDomain = data.amazon_domain ?? 'amazon.com'
     const page = data.page ?? 1
     const isAsync = data.async === 'true'
+    const outputFormat = data.output ?? 'json'
 
     // Validate required params per type
     if (
@@ -62,6 +64,7 @@ export default class RequestController {
       browse_node_id: data.browse_node_id,
       category: data.category,
       seller_id: data.seller_id,
+      country: data.country,
     }
 
     // Log the request (as pending)
@@ -82,6 +85,7 @@ export default class RequestController {
         params: scraperParams,
         logEntryId: logEntry.id,
         userId: apiUser.id,
+        output: outputFormat,
       })
 
       await apiUser.merge({ monthlyRequestsUsed: apiUser.monthlyRequestsUsed + 1 }).save()
@@ -102,12 +106,26 @@ export default class RequestController {
       await logEntry.merge({ status: 'success', responseCached: result.cached }).save()
       await apiUser.merge({ monthlyRequestsUsed: apiUser.monthlyRequestsUsed + 1 }).save()
 
-      return response.json({
+      const jsonResponse: Record<string, unknown> = {
         request_info: { success: true, ...result.request_info },
         ...Object.fromEntries(
           Object.entries(result).filter(([k]) => k !== 'request_info' && k !== 'cached')
         ),
-      })
+      }
+
+      if (outputFormat === 'csv') {
+        const csvService = new CsvService()
+        const dataKey = Object.keys(jsonResponse).find((k) => k !== 'request_info')
+        const dataToExport = dataKey ? jsonResponse[dataKey] : jsonResponse
+        const csv = csvService.jsonToCsv(dataToExport)
+
+        return response
+          .header('Content-Type', 'text/csv')
+          .header('Content-Disposition', `attachment; filename="emerald-${type}.csv"`)
+          .send(csv)
+      }
+
+      return response.json(jsonResponse)
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown scraping error'
       await logEntry.merge({ status: 'error', errorMessage: message }).save()

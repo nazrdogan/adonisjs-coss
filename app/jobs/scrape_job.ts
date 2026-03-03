@@ -5,6 +5,7 @@ export interface ScrapeJobPayload {
   params: ScraperParams
   logEntryId: number
   userId: number
+  output?: 'json' | 'csv'
 }
 
 export default class ScrapeJob extends Job {
@@ -17,6 +18,7 @@ export default class ScrapeJob extends Job {
     const { default: ApiRequest } = await import('#models/api_request')
     const { default: User } = await import('#models/user')
     const { default: redis } = await import('@adonisjs/redis/services/main')
+    const { WebhookService } = await import('#services/webhook_service')
 
     const { params, logEntryId, userId } = payload
     const jobId = this.getId()
@@ -38,13 +40,23 @@ export default class ScrapeJob extends Job {
 
     // Store result in Redis for polling (TTL 10 minutes)
     await redis.set(`job_result:${jobId}`, JSON.stringify({ success: true, data: result }), 'EX', 600)
+
+    // Dispatch webhook
+    const webhookService = new WebhookService()
+    await webhookService.dispatch(userId, 'scrape.completed', {
+      request_id: jobId,
+      type: params.type,
+      amazon_domain: params.amazon_domain ?? 'amazon.com',
+      status: 'success',
+    }).catch(() => {})
   }
 
   async rescue(payload: ScrapeJobPayload, error: Error) {
     const { default: ApiRequest } = await import('#models/api_request')
     const { default: redis } = await import('@adonisjs/redis/services/main')
+    const { WebhookService } = await import('#services/webhook_service')
 
-    const { logEntryId } = payload
+    const { logEntryId, userId, params } = payload
     const jobId = this.getId()
     const message = error.message || 'Unknown scraping error'
 
@@ -59,5 +71,15 @@ export default class ScrapeJob extends Job {
       'EX',
       600
     )
+
+    // Dispatch webhook
+    const webhookService = new WebhookService()
+    await webhookService.dispatch(userId, 'scrape.failed', {
+      request_id: jobId,
+      type: params.type,
+      amazon_domain: params.amazon_domain ?? 'amazon.com',
+      status: 'failed',
+      error: message,
+    }).catch(() => {})
   }
 }

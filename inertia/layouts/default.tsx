@@ -19,6 +19,8 @@ import {
   BookOpen,
   ChevronsUpDown,
   ExternalLink,
+  Webhook,
+  CreditCard,
 } from 'lucide-react'
 
 function NavLink({
@@ -91,6 +93,12 @@ export default function Layout({ children }: { children: ReactElement<Data.Share
                 </NavLink>
                 <NavLink route="dashboard.docs" href="/docs">
                   Docs
+                </NavLink>
+                <NavLink route={'webhooks.index' as any} href="/webhooks">
+                  Webhooks
+                </NavLink>
+                <NavLink route={'billing.index' as any} href="/billing">
+                  Billing
                 </NavLink>
               </nav>
             )}
@@ -165,6 +173,14 @@ export default function Layout({ children }: { children: ReactElement<Data.Share
                       <MenuSeparator />
                     </div>
 
+                    <MenuItem render={<Link route={'webhooks.index' as any} />}>
+                      <Webhook className="size-4" />
+                      Webhooks
+                    </MenuItem>
+                    <MenuItem render={<Link route={'billing.index' as any} />}>
+                      <CreditCard className="size-4" />
+                      Billing
+                    </MenuItem>
                     <MenuItem render={<a href="/#endpoints" />}>
                       <ExternalLink className="size-4" />
                       API Reference

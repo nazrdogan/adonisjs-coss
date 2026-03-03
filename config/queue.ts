@@ -11,6 +11,7 @@ export default defineConfig({
   queue: {
     defaultJobOptions: {
       attempts: 1,
+      timeout: 120000,
       removeOnComplete: { age: 3600, count: 1000 },
       removeOnFail: { age: 7200, count: 500 },
     },

@@ -52,4 +52,40 @@ export default await Env.create(new URL('../', import.meta.url), {
   |----------------------------------------------------------
   */
   SCRAPER_PROXY_URLS: Env.schema.string.optional(),
+  SCRAPER_PROXY_GEOS: Env.schema.string.optional(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for CAPTCHA solving (2Captcha)
+  |----------------------------------------------------------
+  */
+  CAPTCHA_2CAPTCHA_API_KEY: Env.schema.string.optional(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for Playwright browser pool
+  |----------------------------------------------------------
+  */
+  PLAYWRIGHT_ENABLED: Env.schema.boolean.optional(),
+  PLAYWRIGHT_MAX_CONTEXTS: Env.schema.number.optional(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for Stripe billing
+  |----------------------------------------------------------
+  */
+  /*
+  |----------------------------------------------------------
+  | Variables for Google OAuth
+  |----------------------------------------------------------
+  */
+  GOOGLE_CLIENT_ID: Env.schema.string.optional(),
+  GOOGLE_CLIENT_SECRET: Env.schema.string.optional(),
+  GOOGLE_CALLBACK_URL: Env.schema.string.optional(),
+
+  STRIPE_SECRET_KEY: Env.schema.string.optional(),
+  STRIPE_WEBHOOK_SECRET: Env.schema.string.optional(),
+  STRIPE_STARTER_PRICE_ID: Env.schema.string.optional(),
+  STRIPE_GROWTH_PRICE_ID: Env.schema.string.optional(),
+  STRIPE_PRO_PRICE_ID: Env.schema.string.optional(),
 })
